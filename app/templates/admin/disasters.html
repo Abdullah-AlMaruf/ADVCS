@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}All Disasters — ADVCS{% endblock %}
+{% block page_title %}All Disasters — {{ current_user.area.name }}{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('admin.dashboard') }}" class="link-back">← Back to Dashboard</a>
+
+<div class="card mt-2">
+    {% if disasters %}
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Reporter</th>
+                    <th>Status</th>
+                    <th>Responses</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in disasters %}
+                <tr>
+                    <td>{{ d.id }}</td>
+                    <td><strong>{{ d.disaster_type }}</strong></td>
+                    <td>{{ d.location }}</td>
+                    <td>{{ d.reporter.username }}</td>
+                    <td><span class="badge {{ d.status_badge }}">{{ d.status }}</span></td>
+                    <td>{{ d.responses|length }}</td>
+                    <td class="text-muted text-sm">{{ d.created_at.strftime('%b %d, %Y %H:%M') }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <a href="{{ url_for('admin.disaster_detail', disaster_id=d.id) }}"
+                                class="btn btn-outline btn-sm">Detail</a>
+                            {% if d.status == 'verified' %}
+                            <form method="POST" action="{{ url_for('admin.update_status', disaster_id=d.id) }}"
+                                style="display:inline;">
+                                <input type="hidden" name="status" value="in_progress">
+                                <button class="btn btn-info btn-sm">→ In Progress</button>
+                            </form>
+                            {% elif d.status == 'in_progress' %}
+                            <form method="POST" action="{{ url_for('admin.update_status', disaster_id=d.id) }}"
+                                style="display:inline;">
+                                <input type="hidden" name="status" value="resolved">
+                                <button class="btn btn-success btn-sm">✅ Resolve</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🌪️</div>
+        <p>No disaster records yet.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

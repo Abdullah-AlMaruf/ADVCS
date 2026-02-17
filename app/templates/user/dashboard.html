@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard — ADVCS{% endblock %}
+{% block page_title %}My Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stats -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.total }}</div>
+        <div class="stat-label">Total Reports</div>
+    </div>
+    <div class="stat-card warning">
+        <div class="stat-value">{{ stats.pending }}</div>
+        <div class="stat-label">Pending</div>
+    </div>
+    <div class="stat-card info">
+        <div class="stat-value">{{ stats.verified }}</div>
+        <div class="stat-label">Active</div>
+    </div>
+    <div class="stat-card success">
+        <div class="stat-value">{{ stats.resolved }}</div>
+        <div class="stat-label">Resolved</div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card mb-2">
+    <div class="card-header">
+        <h3>Quick Actions</h3>
+    </div>
+    <div class="btn-group">
+        <a href="{{ url_for('user.report_disaster') }}" class="btn btn-primary">📝 Report a Disaster</a>
+        <a href="{{ url_for('user.my_reports') }}" class="btn btn-outline">📋 View My Reports</a>
+    </div>
+</div>
+
+<!-- Recent Reports -->
+<div class="card">
+    <div class="card-header">
+        <h3>Recent Reports</h3>
+    </div>
+    {% if reports %}
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports[:5] %}
+                <tr>
+                    <td>{{ report.id }}</td>
+                    <td><strong>{{ report.disaster_type }}</strong></td>
+                    <td>{{ report.location }}</td>
+                    <td><span class="badge {{ report.status_badge }}">{{ report.status }}</span></td>
+                    <td class="text-muted text-sm">{{ report.created_at.strftime('%b %d, %Y %H:%M') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <p>You haven't reported any disasters yet.</p>
+        <a href="{{ url_for('user.report_disaster') }}" class="btn btn-primary mt-2">Submit Your First Report</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
