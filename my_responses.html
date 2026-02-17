@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}My Responses — ADVCS{% endblock %}
+{% block page_title %}My Responses{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('volunteer.dashboard') }}" class="link-back">← Back to Dashboard</a>
+
+<div class="card mt-2">
+    <div class="card-header">
+        <h3>Response History</h3>
+    </div>
+    {% if responses %}
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Disaster</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Message</th>
+                    <th>My Status</th>
+                    <th>Disaster Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in responses %}
+                <tr>
+                    <td>#{{ r.disaster_id }}</td>
+                    <td><strong>{{ r.disaster.disaster_type }}</strong></td>
+                    <td>{{ r.disaster.location }}</td>
+                    <td class="text-sm">{{ r.message[:50] }}{% if r.message|length > 50 %}…{% endif %}</td>
+                    <td>
+                        <span
+                            class="badge badge-{% if r.status == 'completed' %}success{% elif r.status == 'on_site' %}primary{% else %}info{% endif %}">
+                            {{ r.status }}
+                        </span>
+                    </td>
+                    <td><span class="badge {{ r.disaster.status_badge }}">{{ r.disaster.status }}</span></td>
+                    <td class="text-muted text-sm">{{ r.created_at.strftime('%b %d, %H:%M') }}</td>
+                    <td>
+                        {% if r.status == 'accepted' %}
+                        <form method="POST" action="{{ url_for('volunteer.update_response', response_id=r.id) }}"
+                            style="display:inline;">
+                            <input type="hidden" name="status" value="on_site">
+                            <button class="btn btn-info btn-sm">📍 On Site</button>
+                        </form>
+                        {% elif r.status == 'on_site' %}
+                        <form method="POST" action="{{ url_for('volunteer.update_response', response_id=r.id) }}"
+                            style="display:inline;">
+                            <input type="hidden" name="status" value="completed">
+                            <button class="btn btn-success btn-sm">✅ Complete</button>
+                        </form>
+                        {% else %}
+                        <span class="text-muted text-sm">Done</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">✋</div>
+        <p>You haven't responded to any disasters yet.</p>
+        <a href="{{ url_for('volunteer.alerts') }}" class="btn btn-primary mt-2">View Active Alerts</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

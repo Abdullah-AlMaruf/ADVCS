@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Active Alerts — ADVCS{% endblock %}
+{% block page_title %}Active Alerts — {{ current_user.area.name }}{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('volunteer.dashboard') }}" class="link-back">← Back to Dashboard</a>
+
+<div class="mt-2">
+    {% if disasters %}
+    {% for d in disasters %}
+    <div class="disaster-card">
+        <div class="disaster-header">
+            <span class="disaster-type">{{ d.disaster_type }}</span>
+            <span class="badge {{ d.status_badge }}">{{ d.status }}</span>
+        </div>
+        <div class="disaster-meta">
+            <span>📍 {{ d.location }}</span>
+            <span>👤 Reported by {{ d.reporter.username }}</span>
+            <span>🕐 {{ d.created_at.strftime('%b %d, %Y %H:%M') }}</span>
+            <span>✋ {{ d.responses|length }} response(s)</span>
+        </div>
+        <div class="disaster-desc">{{ d.description }}</div>
+        {% if d.id not in responded_ids %}
+        <form method="POST" action="{{ url_for('volunteer.respond', disaster_id=d.id) }}">
+            <div class="form-group">
+                <input type="text" name="message" class="form-control" placeholder="Optional message…">
+            </div>
+            <button type="submit" class="btn btn-success btn-sm">✋ Respond & Help</button>
+        </form>
+        {% else %}
+        <span class="badge badge-success">✅ Already responded</span>
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="card">
+        <div class="empty-state">
+            <div class="empty-icon">✅</div>
+            <p>No active alerts at this time.</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
