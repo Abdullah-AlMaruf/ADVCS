@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Register — ADVCS{% endblock %}
+
+{% block body %}
+<div class="auth-wrapper">
+    <div class="auth-card" style="max-width:520px;">
+        <div class="brand"><span>🛡️</span></div>
+        <h1>Create Account</h1>
+        <p class="subtitle">Join your local disaster response team</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('auth.register') }}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" class="form-control"
+                        placeholder="Choose a username" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="your@email.com"
+                        required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control"
+                        placeholder="Min 6 characters" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" class="form-control"
+                        placeholder="Repeat password" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="text" id="phone" name="phone" class="form-control" placeholder="01XXXXXXXXX">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="area_id">Select Your Area</label>
+                    <select id="area_id" name="area_id" class="form-control" required>
+                        <option value="">-- Choose Area --</option>
+                        {% for area in areas %}
+                        <option value="{{ area.id }}">{{ area.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="role">Register As</label>
+                    <select id="role" name="role" class="form-control" required>
+                        <option value="user">Local User (Reporter)</option>
+                        <option value="volunteer">Volunteer</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block mt-1">Create Account</button>
+        </form>
+        <p class="text-center mt-2 text-sm text-muted">
+            Already have an account? <a href="{{ url_for('auth.login') }}">Sign in</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
