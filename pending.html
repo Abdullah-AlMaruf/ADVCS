@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Pending Reports — ADVCS{% endblock %}
+{% block page_title %}Pending Reports{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('admin.dashboard') }}" class="link-back">← Back to Dashboard</a>
+
+<div class="mt-2">
+    {% if reports %}
+    {% for report in reports %}
+    <div class="disaster-card">
+        <div class="disaster-header">
+            <span class="disaster-type">{{ report.disaster_type }}</span>
+            <span class="badge badge-warning">Pending</span>
+        </div>
+        <div class="disaster-meta">
+            <span>📍 {{ report.location }}</span>
+            <span>👤 {{ report.reporter.username }}</span>
+            <span>🕐 {{ report.created_at.strftime('%b %d, %Y %H:%M') }}</span>
+        </div>
+        <div class="disaster-desc">{{ report.description }}</div>
+        <div class="btn-group">
+            <form method="POST" action="{{ url_for('admin.verify_disaster', disaster_id=report.id) }}"
+                style="display:inline;">
+                <input type="hidden" name="action" value="verify">
+                <button type="submit" class="btn btn-success btn-sm">✅ Verify & Alert Volunteers</button>
+            </form>
+            <form method="POST" action="{{ url_for('admin.verify_disaster', disaster_id=report.id) }}"
+                style="display:inline;">
+                <input type="hidden" name="action" value="reject">
+                <button type="submit" class="btn btn-danger btn-sm">❌ Reject</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="card">
+        <div class="empty-state">
+            <div class="empty-icon">✅</div>
+            <p>No pending reports. All caught up!</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
