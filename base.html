@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ADVCS — Area-Based Disaster Volunteer Coordination System">
+    <title>{% block title %}ADVCS{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    {% block body %}
+    <div class="page-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🛡️ ADVCS</h2>
+                {% if current_user.is_authenticated %}
+                <span class="area-label">{{ current_user.area.name }}</span>
+                {% endif %}
+            </div>
+            <nav class="sidebar-nav">
+                {% if current_user.is_authenticated %}
+                    {% if current_user.role == 'admin' %}
+                        <a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+                            <span class="nav-icon">📊</span> Dashboard
+                        </a>
+                        <a href="{{ url_for('admin.pending_reports') }}" class="{% if request.endpoint == 'admin.pending_reports' %}active{% endif %}">
+                            <span class="nav-icon">⏳</span> Pending Reports
+                        </a>
+                        <a href="{{ url_for('admin.all_disasters') }}" class="{% if request.endpoint == 'admin.all_disasters' %}active{% endif %}">
+                            <span class="nav-icon">🌪️</span> All Disasters
+                        </a>
+                        <a href="{{ url_for('admin.volunteers') }}" class="{% if request.endpoint == 'admin.volunteers' %}active{% endif %}">
+                            <span class="nav-icon">👥</span> Volunteers
+                        </a>
+                        <!-- Admin is also a volunteer -->
+                        <a href="{{ url_for('volunteer.alerts') }}" class="{% if request.endpoint == 'volunteer.alerts' %}active{% endif %}">
+                            <span class="nav-icon">🚨</span> Volunteer Alerts
+                        </a>
+                        <a href="{{ url_for('volunteer.my_responses') }}" class="{% if request.endpoint == 'volunteer.my_responses' %}active{% endif %}">
+                            <span class="nav-icon">✋</span> My Responses
+                        </a>
+                    {% elif current_user.role == 'volunteer' %}
+                        <a href="{{ url_for('volunteer.dashboard') }}" class="{% if request.endpoint == 'volunteer.dashboard' %}active{% endif %}">
+                            <span class="nav-icon">📊</span> Dashboard
+                        </a>
+                        <a href="{{ url_for('volunteer.alerts') }}" class="{% if request.endpoint == 'volunteer.alerts' %}active{% endif %}">
+                            <span class="nav-icon">🚨</span> Active Alerts
+                        </a>
+                        <a href="{{ url_for('volunteer.my_responses') }}" class="{% if request.endpoint == 'volunteer.my_responses' %}active{% endif %}">
+                            <span class="nav-icon">✋</span> My Responses
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('user.dashboard') }}" class="{% if request.endpoint == 'user.dashboard' %}active{% endif %}">
+                            <span class="nav-icon">📊</span> Dashboard
+                        </a>
+                        <a href="{{ url_for('user.report_disaster') }}" class="{% if request.endpoint == 'user.report_disaster' %}active{% endif %}">
+                            <span class="nav-icon">📝</span> Report Disaster
+                        </a>
+                        <a href="{{ url_for('user.my_reports') }}" class="{% if request.endpoint == 'user.my_reports' %}active{% endif %}">
+                            <span class="nav-icon">📋</span> My Reports
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </nav>
+            <div class="sidebar-footer">
+                {% if current_user.is_authenticated %}
+                <div class="user-info mb-1">
+                    <div class="user-avatar">{{ current_user.username[0]|upper }}</div>
+                    <div>
+                        <div class="user-name">{{ current_user.username }}</div>
+                        <div class="user-role">{{ current_user.role }}</div>
+                    </div>
+                </div>
+                <a href="{{ url_for('auth.logout') }}">🚪 Logout</a>
+                {% endif %}
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header with notifications -->
+            <div class="main-header">
+                <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+                {% if current_user.is_authenticated %}
+                <div class="notif-wrapper">
+                    <div class="notif-bell" id="notif-bell">
+                        🔔
+                        <span class="notif-count" id="notif-count" style="display:none;">0</span>
+                    </div>
+                    <div class="notif-dropdown" id="notif-dropdown">
+                        <div class="notif-header">
+                            <span>Notifications</span>
+                            <a href="javascript:void(0)" onclick="markAllRead()" class="text-sm">Mark all read</a>
+                        </div>
+                        <div id="notif-list">
+                            <div class="notif-empty">Loading…</div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    {% endblock %}
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
