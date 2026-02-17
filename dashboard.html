@@ -1,29 +1,25 @@
 {% extends "base.html" %}
-{% block title %}Admin Dashboard — ADVCS{% endblock %}
-{% block page_title %}Admin Dashboard — {{ current_user.area.name }}{% endblock %}
+{% block title %}My Dashboard — ADVCS{% endblock %}
+{% block page_title %}My Dashboard{% endblock %}
 
 {% block content %}
 <!-- Stats -->
 <div class="stats-grid">
     <div class="stat-card">
-        <div class="stat-value">{{ stats.total_disasters }}</div>
-        <div class="stat-label">Total Disasters</div>
+        <div class="stat-value">{{ stats.total }}</div>
+        <div class="stat-label">Total Reports</div>
     </div>
     <div class="stat-card warning">
         <div class="stat-value">{{ stats.pending }}</div>
-        <div class="stat-label">Pending Verification</div>
+        <div class="stat-label">Pending</div>
     </div>
     <div class="stat-card info">
-        <div class="stat-value">{{ stats.in_progress }}</div>
-        <div class="stat-label">In Progress</div>
+        <div class="stat-value">{{ stats.verified }}</div>
+        <div class="stat-label">Active</div>
     </div>
     <div class="stat-card success">
         <div class="stat-value">{{ stats.resolved }}</div>
         <div class="stat-label">Resolved</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-value">{{ stats.total_volunteers }}</div>
-        <div class="stat-label">Area Volunteers</div>
     </div>
 </div>
 
@@ -33,19 +29,17 @@
         <h3>Quick Actions</h3>
     </div>
     <div class="btn-group">
-        <a href="{{ url_for('admin.pending_reports') }}" class="btn btn-warning">⏳ Pending Reports ({{ stats.pending
-            }})</a>
-        <a href="{{ url_for('admin.all_disasters') }}" class="btn btn-outline">🌪️ All Disasters</a>
-        <a href="{{ url_for('admin.volunteers') }}" class="btn btn-outline">👥 Volunteers</a>
+        <a href="{{ url_for('user.report_disaster') }}" class="btn btn-primary">📝 Report a Disaster</a>
+        <a href="{{ url_for('user.my_reports') }}" class="btn btn-outline">📋 View My Reports</a>
     </div>
 </div>
 
-<!-- Recent Disasters -->
+<!-- Recent Reports -->
 <div class="card">
     <div class="card-header">
-        <h3>Recent Disasters in {{ current_user.area.name }}</h3>
+        <h3>Recent Reports</h3>
     </div>
-    {% if disasters %}
+    {% if reports %}
     <div class="table-wrapper">
         <table>
             <thead>
@@ -53,27 +47,18 @@
                     <th>#</th>
                     <th>Type</th>
                     <th>Location</th>
-                    <th>Reporter</th>
                     <th>Status</th>
-                    <th>Responses</th>
                     <th>Date</th>
-                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                {% for d in disasters[:10] %}
+                {% for report in reports[:5] %}
                 <tr>
-                    <td>{{ d.id }}</td>
-                    <td><strong>{{ d.disaster_type }}</strong></td>
-                    <td>{{ d.location }}</td>
-                    <td>{{ d.reporter.username }}</td>
-                    <td><span class="badge {{ d.status_badge }}">{{ d.status }}</span></td>
-                    <td>{{ d.responses|length }}</td>
-                    <td class="text-muted text-sm">{{ d.created_at.strftime('%b %d, %H:%M') }}</td>
-                    <td>
-                        <a href="{{ url_for('admin.disaster_detail', disaster_id=d.id) }}"
-                            class="btn btn-outline btn-sm">View</a>
-                    </td>
+                    <td>{{ report.id }}</td>
+                    <td><strong>{{ report.disaster_type }}</strong></td>
+                    <td>{{ report.location }}</td>
+                    <td><span class="badge {{ report.status_badge }}">{{ report.status }}</span></td>
+                    <td class="text-muted text-sm">{{ report.created_at.strftime('%b %d, %Y %H:%M') }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -81,8 +66,9 @@
     </div>
     {% else %}
     <div class="empty-state">
-        <div class="empty-icon">✅</div>
-        <p>No disasters reported in your area yet.</p>
+        <div class="empty-icon">📝</div>
+        <p>You haven't reported any disasters yet.</p>
+        <a href="{{ url_for('user.report_disaster') }}" class="btn btn-primary mt-2">Submit Your First Report</a>
     </div>
     {% endif %}
 </div>
