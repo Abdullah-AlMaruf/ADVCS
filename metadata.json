@@ -1,0 +1,5 @@
+{
+  "name": "Sohayok - Local Disaster Response",
+  "description": "A decentralized disaster response system where local volunteers act as admins to coordinate rescue and relief efforts in their areas.",
+  "requestFramePermissions": ["geolocation"]
+}
