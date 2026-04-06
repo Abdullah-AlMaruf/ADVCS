@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import React from 'react';
 import { motion } from 'motion/react';
-import { Shield, Phone, User, Loader2, ArrowRight } from 'lucide-react';
+import { Shield, Phone, User, Loader2, ArrowRight, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { Volunteer } from '../types';
 
@@ -49,64 +49,69 @@ export default function VolunteerLogin({ onLogin }: VolunteerLoginProps) {
   };
 
   return (
-    <div className="max-w-md mx-auto">
-      <motion.div 
+    <div className="max-w-md mx-auto py-20 px-4">
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white p-8 rounded-[32px] shadow-xl border border-[#5A5A40]/10"
+        className="glass-card p-12 rounded-[48px] relative overflow-hidden"
       >
-        <div className="w-16 h-16 bg-[#5A5A40]/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <Shield className="w-8 h-8 text-[#5A5A40]" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl" />
+
+        <div className="w-24 h-24 bg-primary/10 rounded-[32px] flex items-center justify-center mx-auto mb-10 shadow-xl shadow-primary/10 rotate-6 group hover:rotate-12 transition-transform duration-500">
+          <Shield className="w-12 h-12 text-primary" />
         </div>
-        
-        <h2 className="font-serif text-2xl font-bold text-center text-[#5A5A40] mb-2">
-          {isRegistering ? 'স্বেচ্ছাসেবক নিবন্ধন' : 'স্বেচ্ছাসেবক লগইন'}
+
+        <h2 className="text-4xl font-black text-center text-secondary mb-4 tracking-tighter">
+          {isRegistering ? 'JOIN THE FORCE' : 'WELCOME BACK'}
         </h2>
-        <p className="text-center text-gray-500 mb-8 text-sm">
-          {isRegistering 
-            ? 'আপনার এলাকার মানুষের পাশে দাঁড়াতে আজই যুক্ত হোন।' 
-            : 'আপনার ড্যাশবোর্ডে প্রবেশ করতে ফোন নম্বর দিন।'}
+        <p className="text-center text-slate-400 mb-12 text-sm font-bold uppercase tracking-[0.2em]">
+          {isRegistering
+            ? 'Become a rapid responder today.'
+            : 'Access your operational command.'}
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-8">
           {isRegistering && (
             <>
-              <div>
-                <label className="block text-xs font-bold text-[#5A5A40] mb-1 uppercase tracking-wider">নাম (Full Name)</label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input 
-                    type="text" 
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-2">Full Name</label>
+                <div className="relative group">
+                  <User className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+                  <input
+                    type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="আপনার নাম লিখুন"
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5A5A40]/20 focus:border-[#5A5A40] transition-all"
+                    placeholder="Enter your full name"
+                    className="input-field pl-14"
                   />
                 </div>
               </div>
-              <div>
-                <label className="block text-xs font-bold text-[#5A5A40] mb-1 uppercase tracking-wider">এলাকা (Area)</label>
-                <input 
-                  type="text" 
-                  value={formData.area}
-                  onChange={(e) => setFormData({ ...formData, area: e.target.value })}
-                  placeholder="যেমন: ধানমন্ডি, ঢাকা"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5A5A40]/20 focus:border-[#5A5A40] transition-all"
-                />
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-2">Assigned Area</label>
+                <div className="relative group">
+                  <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+                  <input
+                    type="text"
+                    value={formData.area}
+                    onChange={(e) => setFormData({ ...formData, area: e.target.value })}
+                    placeholder="e.g. Dhanmondi, Dhaka"
+                    className="input-field pl-14"
+                  />
+                </div>
               </div>
             </>
           )}
 
-          <div>
-            <label className="block text-xs font-bold text-[#5A5A40] mb-1 uppercase tracking-wider">ফোন নম্বর (Phone Number)</label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input 
-                type="tel" 
+          <div className="space-y-3">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-2">Phone Number</label>
+            <div className="relative group">
+              <Phone className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+              <input
+                type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="০১৭XXXXXXXX"
-                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5A5A40]/20 focus:border-[#5A5A40] transition-all"
+                placeholder="017XXXXXXXX"
+                className="input-field pl-14"
               />
             </div>
           </div>
@@ -114,25 +119,26 @@ export default function VolunteerLogin({ onLogin }: VolunteerLoginProps) {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-[#5A5A40] text-white py-3 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#4A4A30] transition-all shadow-lg hover:shadow-xl disabled:opacity-50"
+            className="btn-primary w-full !py-5 !text-lg group relative overflow-hidden"
           >
+            <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
             {isLoading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <Loader2 className="w-7 h-7 animate-spin" />
             ) : (
               <>
-                {isRegistering ? 'নিবন্ধন করুন' : 'লগইন করুন'}
-                <ArrowRight className="w-4 h-4" />
+                {isRegistering ? 'INITIALIZE ACCOUNT' : 'SECURE LOGIN'}
+                <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-500" />
               </>
             )}
           </button>
         </form>
 
-        <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-          <button 
+        <div className="mt-12 pt-10 border-t border-slate-100 text-center">
+          <button
             onClick={() => setIsRegistering(!isRegistering)}
-            className="text-sm font-medium text-[#5A5A40] hover:underline"
+            className="text-[10px] font-black text-slate-400 hover:text-primary uppercase tracking-[0.3em] transition-colors"
           >
-            {isRegistering ? 'ইতিমধ্যে একাউন্ট আছে? লগইন করুন' : 'নতুন স্বেচ্ছাসেবক? নিবন্ধন করুন'}
+            {isRegistering ? 'Already have an account? Login' : 'New volunteer? Register here'}
           </button>
         </div>
       </motion.div>
