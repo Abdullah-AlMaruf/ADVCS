@@ -1,14 +1,46 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
+@import url('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Cormorant Garamond", serif;
+  --font-display: "Outfit", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --color-primary: #FF3D00; /* Vibrant Safety Orange-Red */
+  --color-primary-dark: #D83400;
+  --color-secondary: #1E293B; /* Deep Slate */
+  --color-accent: #00D2FF; /* Electric Cyan */
+  --color-paper: #FFFFFF;
+  --color-ink: #0F172A;
+  --color-success: #10B981;
 }
 
 @layer base {
   body {
-    @apply bg-[#F5F5F0] text-[#1A1A1A] antialiased;
+    @apply bg-[#F8FAFC] text-ink antialiased selection:bg-primary/20;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-500;
+  }
+
+  .input-field {
+    @apply w-full px-6 py-4 rounded-2xl border border-slate-200 bg-white focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary/30 transition-all duration-300 text-slate-700 placeholder:text-slate-400;
+  }
+
+  .btn-primary {
+    @apply px-8 py-4 rounded-2xl bg-primary text-white font-extrabold hover:bg-primary-dark transition-all duration-300 shadow-xl shadow-primary/20 active:scale-95 flex items-center justify-center gap-3 uppercase tracking-wider text-sm;
+  }
+
+  .btn-secondary {
+    @apply px-8 py-4 rounded-2xl border-2 border-slate-200 font-extrabold text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 uppercase tracking-wider text-sm;
   }
 }
 
