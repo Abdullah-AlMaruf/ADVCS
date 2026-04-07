@@ -22,18 +22,18 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
         </Link>
 
         <div className="flex items-center gap-10">
-          <Link
-            to="/"
+          <Link 
+            to="/" 
             className="text-xs font-black text-slate-500 hover:text-primary transition-all flex items-center gap-2 uppercase tracking-widest"
           >
             <AlertTriangle className="w-4 h-4" />
             Report
           </Link>
-
+          
           {user ? (
             <div className="flex items-center gap-8">
-              <Link
-                to="/volunteer/dashboard"
+              <Link 
+                to="/volunteer/dashboard" 
                 className="text-xs font-black text-slate-500 hover:text-primary transition-all flex items-center gap-2 uppercase tracking-widest"
               >
                 <Shield className="w-4 h-4" />
@@ -48,7 +48,7 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
                 <div className="w-12 h-12 rounded-2xl bg-slate-50 border-2 border-slate-100 flex items-center justify-center shadow-sm">
                   <User className="w-6 h-6 text-secondary" />
                 </div>
-                <button
+                <button 
                   onClick={onLogout}
                   className="p-2.5 hover:bg-red-50 rounded-2xl transition-all text-red-500 hover:scale-110 active:scale-90"
                   title="Logout"
@@ -58,8 +58,8 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
               </div>
             </div>
           ) : (
-            <Link
-              to="/volunteer/login"
+            <Link 
+              to="/volunteer/login" 
               className="btn-primary !px-8 !py-3 !text-xs !rounded-xl"
             >
               Volunteer Portal

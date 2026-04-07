@@ -19,7 +19,7 @@ function NotificationManager({ user }: { user: Volunteer | null }) {
       if (!user) return;
 
       const isUrgent = report.severity === 'critical' || report.severity === 'high';
-
+      
       toast(isUrgent ? '🚨 EMERGENCY ALERT' : '⚠️ New Disaster Report', {
         description: `${report.type.toUpperCase()} in ${report.area}: ${report.description}`,
         duration: isUrgent ? 15000 : 8000,
@@ -74,13 +74,13 @@ export default function App() {
         <main className="container mx-auto px-4 py-8 max-w-6xl">
           <Routes>
             <Route path="/" element={<ReportForm />} />
-            <Route
-              path="/volunteer/login"
-              element={user ? <Navigate to="/volunteer/dashboard" /> : <VolunteerLogin onLogin={handleLogin} />}
+            <Route 
+              path="/volunteer/login" 
+              element={user ? <Navigate to="/volunteer/dashboard" /> : <VolunteerLogin onLogin={handleLogin} />} 
             />
-            <Route
-              path="/volunteer/dashboard"
-              element={user ? <VolunteerDashboard user={user} /> : <Navigate to="/volunteer/login" />}
+            <Route 
+              path="/volunteer/dashboard" 
+              element={user ? <VolunteerDashboard user={user} /> : <Navigate to="/volunteer/login" />} 
             />
           </Routes>
         </main>

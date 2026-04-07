@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  AlertTriangle,
-  Clock,
-  MapPin,
-  CheckCircle2,
-  Activity,
-  Users,
+import { 
+  AlertTriangle, 
+  Clock, 
+  MapPin, 
+  CheckCircle2, 
+  Activity, 
+  Users, 
   ChevronRight,
   Filter,
   Search,
@@ -67,7 +67,7 @@ function EditReportModal({ report, onClose, onSave }: EditModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-      <motion.div
+      <motion.div 
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
@@ -85,8 +85,8 @@ function EditReportModal({ report, onClose, onSave }: EditModalProps) {
         <div className="p-10 space-y-6">
           <div className="space-y-2">
             <label className="text-[10px] font-bold text-secondary uppercase tracking-[0.2em]">Disaster Type</label>
-            <input
-              type="text"
+            <input 
+              type="text" 
               value={formData.type}
               onChange={(e) => setFormData({ ...formData, type: e.target.value })}
               className="input-field"
@@ -95,7 +95,7 @@ function EditReportModal({ report, onClose, onSave }: EditModalProps) {
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-[10px] font-bold text-secondary uppercase tracking-[0.2em]">Severity</label>
-              <select
+              <select 
                 value={formData.severity}
                 onChange={(e) => setFormData({ ...formData, severity: e.target.value as any })}
                 className="input-field appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M5%207.5L10%2012.5L15%207.5%22%20stroke%3D%22%234A4A38%22%20stroke-width%3D%221.66667%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E')] bg-[length:16px_16px] bg-[right_1rem_center] bg-no-repeat"
@@ -108,7 +108,7 @@ function EditReportModal({ report, onClose, onSave }: EditModalProps) {
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-bold text-secondary uppercase tracking-[0.2em]">Status</label>
-              <select
+              <select 
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
                 className="input-field appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M5%207.5L10%2012.5L15%207.5%22%20stroke%3D%22%234A4A38%22%20stroke-width%3D%221.66667%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E')] bg-[length:16px_16px] bg-[right_1rem_center] bg-no-repeat"
@@ -121,8 +121,8 @@ function EditReportModal({ report, onClose, onSave }: EditModalProps) {
           </div>
           <div className="space-y-2">
             <label className="text-[10px] font-bold text-secondary uppercase tracking-[0.2em]">Area</label>
-            <input
-              type="text"
+            <input 
+              type="text" 
               value={formData.area}
               onChange={(e) => setFormData({ ...formData, area: e.target.value })}
               className="input-field"
@@ -130,7 +130,7 @@ function EditReportModal({ report, onClose, onSave }: EditModalProps) {
           </div>
           <div className="space-y-2">
             <label className="text-[10px] font-bold text-secondary uppercase tracking-[0.2em]">Description</label>
-            <textarea
+            <textarea 
               rows={3}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -138,13 +138,13 @@ function EditReportModal({ report, onClose, onSave }: EditModalProps) {
             />
           </div>
           <div className="flex gap-4 pt-6">
-            <button
+            <button 
               onClick={onClose}
               className="btn-secondary flex-1"
             >
               Cancel
             </button>
-            <button
+            <button 
               onClick={() => onSave(formData)}
               className="btn-primary flex-1"
             >
@@ -165,7 +165,7 @@ interface DeleteModalProps {
 function DeleteConfirmationModal({ onClose, onConfirm }: DeleteModalProps) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[110] flex items-center justify-center p-4">
-      <motion.div
+      <motion.div 
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
@@ -177,13 +177,13 @@ function DeleteConfirmationModal({ onClose, onConfirm }: DeleteModalProps) {
         <h3 className="text-3xl font-bold text-primary mb-3">Delete Report?</h3>
         <p className="text-secondary mb-10 leading-relaxed font-serif italic">"This action cannot be undone. The report will be permanently removed from the system."</p>
         <div className="flex gap-4">
-          <button
+          <button 
             onClick={onClose}
             className="btn-secondary flex-1"
           >
             Cancel
           </button>
-          <button
+          <button 
             onClick={onConfirm}
             className="flex-1 px-8 py-3.5 rounded-full bg-red-500 text-white font-bold hover:bg-red-600 transition-all shadow-lg shadow-red-200 active:scale-95"
           >
@@ -203,7 +203,7 @@ interface MapModalProps {
 function ReportMapModal({ report, onClose }: MapModalProps) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
-      <motion.div
+      <motion.div 
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
@@ -219,9 +219,9 @@ function ReportMapModal({ report, onClose }: MapModalProps) {
           </button>
         </div>
         <div className="h-[500px] relative z-0">
-          <MapContainer
-            center={[report.lat!, report.lng!]}
-            zoom={15}
+          <MapContainer 
+            center={[report.lat!, report.lng!]} 
+            zoom={15} 
             style={{ height: '100%', width: '100%' }}
           >
             <TileLayer
@@ -381,7 +381,7 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
 
   const filteredReports = reports.filter(r => {
     const matchesFilter = filter === 'all' || r.status === filter;
-    const matchesSearch = r.area.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const matchesSearch = r.area.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          r.type.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesFilter && matchesSearch;
   });
@@ -400,7 +400,7 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10">
         <div className="space-y-4">
-          <motion.div
+          <motion.div 
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]"
@@ -432,7 +432,7 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
           { label: 'Responders', value: stats.activeVolunteers, icon: Users, color: 'text-accent', bg: 'bg-accent/10' },
           { label: 'Resolved', value: stats.completedTasks, icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-50' },
         ].map((stat, i) => (
-          <motion.div
+          <motion.div 
             key={i}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -456,7 +456,7 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
         <div className="p-10 border-b border-slate-100 flex flex-col xl:flex-row xl:items-center justify-between gap-8 bg-slate-50/30">
           <div className="flex items-center gap-6">
             <h2 className="text-4xl font-black text-secondary tracking-tighter">LIVE FEED</h2>
-            <button
+            <button 
               onClick={fetchData}
               className="p-3.5 bg-white hover:bg-primary hover:text-white rounded-2xl transition-all text-slate-400 shadow-xl shadow-slate-200/50 active:rotate-180 duration-700"
               title="Refresh Feed"
@@ -489,8 +489,8 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
 
             <div className="relative group">
               <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-primary transition-colors" />
-              <input
-                type="text"
+              <input 
+                type="text" 
                 placeholder="Search area or type..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -516,16 +516,16 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
         <div className="divide-y divide-slate-50">
           <AnimatePresence mode="wait">
             {viewMode === 'map' ? (
-              <motion.div
+              <motion.div 
                 key="map-view"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="h-[600px] relative z-0"
               >
-                <MapContainer
-                  center={mapCenter}
-                  zoom={mapZoom}
+                <MapContainer 
+                  center={mapCenter} 
+                  zoom={mapZoom} 
                   style={{ height: '100%', width: '100%' }}
                 >
                   <TileLayer
@@ -534,7 +534,7 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
                   />
                   <MapUpdater center={mapCenter} zoom={mapZoom} />
                   <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-2">
-                    <button
+                    <button 
                       onClick={() => {
                         if (navigator.geolocation) {
                           navigator.geolocation.getCurrentPosition((pos) => {
@@ -548,7 +548,7 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
                     >
                       <Navigation className="w-5 h-5 group-active:scale-90 transition-transform" />
                     </button>
-                    <button
+                    <button 
                       onClick={() => {
                         setMapCenter([23.8103, 90.4125]);
                         setMapZoom(7);
@@ -560,8 +560,8 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
                     </button>
                   </div>
                   {filteredReports.filter(r => r.lat && r.lng).map(report => (
-                    <Marker
-                      key={report.id}
+                    <Marker 
+                      key={report.id} 
                       position={[report.lat!, report.lng!]}
                       eventHandlers={{
                         click: () => {
@@ -586,7 +586,7 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
                             <span className={`px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-widest border ${getStatusColor(report.status)}`}>
                               {report.status}
                             </span>
-                            <button
+                            <button 
                               onClick={() => {
                                 setViewMode('list');
                                 setSearchQuery(report.area);
@@ -603,7 +603,7 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
                 </MapContainer>
               </motion.div>
             ) : (
-              <motion.div
+              <motion.div 
                 key="list-view"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -623,7 +623,7 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
                   </div>
                 ) : (
                   filteredReports.map((report) => (
-                    <motion.div
+                    <motion.div 
                       key={report.id}
                       layout
                       initial={{ opacity: 0 }}
@@ -633,7 +633,7 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
                     >
                       <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-10">
                         <div className="flex gap-8">
-                          <button
+                          <button 
                             onClick={() => report.lat && report.lng && setViewingMapReport(report)}
                             className={`w-20 h-20 rounded-[32px] flex items-center justify-center shrink-0 border-4 ${getStatusColor(report.status)} shadow-2xl group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500 ${report.lat && report.lng ? 'cursor-pointer' : 'cursor-default'}`}
                             title={report.lat && report.lng ? "View on Map" : ""}
@@ -676,14 +676,14 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
                         <div className="flex items-center gap-4 shrink-0 self-end xl:self-center">
                           {/* Admin Controls */}
                           <div className="flex gap-3 mr-6 pr-6 border-r-2 border-slate-100">
-                            <button
+                            <button 
                               onClick={() => setEditingReport(report)}
                               className="p-4 bg-white hover:bg-blue-50 text-blue-500 rounded-2xl transition-all hover:scale-110 active:scale-90 shadow-sm border border-slate-100"
                               title="Edit Report"
                             >
                               <Edit2 className="w-5 h-5" />
                             </button>
-                            <button
+                            <button 
                               onClick={() => setDeletingReportId(report.id)}
                               className="p-4 bg-white hover:bg-red-50 text-red-500 rounded-2xl transition-all hover:scale-110 active:scale-90 shadow-sm border border-slate-100"
                               title="Delete Report"
@@ -693,7 +693,7 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
                           </div>
 
                           {report.status === 'pending' && (
-                            <button
+                            <button 
                               onClick={() => handleAction(report.id, 'accepted')}
                               className="btn-primary !px-8 !py-4 !text-xs group/btn shadow-2xl"
                             >
@@ -703,14 +703,14 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
                           )}
                           {report.status === 'active' && (
                             <div className="flex gap-4">
-                              <button
+                              <button 
                                 onClick={() => handleAction(report.id, 'helping')}
                                 className="px-8 py-4 rounded-2xl bg-accent text-white text-xs font-black uppercase tracking-widest hover:bg-accent/90 transition-all shadow-2xl shadow-accent/30 flex items-center gap-3 active:scale-95"
                               >
                                 <Activity className="w-5 h-5" />
                                 Assisting
                               </button>
-                              <button
+                              <button 
                                 onClick={() => handleAction(report.id, 'completed')}
                                 className="px-8 py-4 rounded-2xl bg-emerald-500 text-white text-xs font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-2xl shadow-emerald-200 flex items-center gap-3 active:scale-95"
                               >
@@ -720,7 +720,7 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
                             </div>
                           )}
                           {report.lat && report.lng && (
-                            <button
+                            <button 
                               onClick={() => setViewingMapReport(report)}
                               className="p-4 bg-white border-2 border-slate-100 rounded-2xl hover:bg-slate-50 hover:border-primary transition-all text-slate-400 hover:text-primary hover:scale-110 active:scale-90 shadow-sm"
                               title="View on Map"
@@ -742,22 +742,22 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
       {/* Modals */}
       <AnimatePresence>
         {editingReport && (
-          <EditReportModal
-            report={editingReport}
+          <EditReportModal 
+            report={editingReport} 
             onClose={() => setEditingReport(null)}
             onSave={(data) => handleUpdate(editingReport.id, data)}
           />
         )}
 
         {deletingReportId && (
-          <DeleteConfirmationModal
+          <DeleteConfirmationModal 
             onClose={() => setDeletingReportId(null)}
             onConfirm={() => handleDelete(deletingReportId)}
           />
         )}
 
         {viewingMapReport && (
-          <ReportMapModal
+          <ReportMapModal 
             report={viewingMapReport}
             onClose={() => setViewingMapReport(null)}
           />

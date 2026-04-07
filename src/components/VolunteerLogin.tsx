@@ -50,23 +50,23 @@ export default function VolunteerLogin({ onLogin }: VolunteerLoginProps) {
 
   return (
     <div className="max-w-md mx-auto py-20 px-4">
-      <motion.div
+      <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="glass-card p-12 rounded-[48px] relative overflow-hidden"
       >
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl" />
-
+        
         <div className="w-24 h-24 bg-primary/10 rounded-[32px] flex items-center justify-center mx-auto mb-10 shadow-xl shadow-primary/10 rotate-6 group hover:rotate-12 transition-transform duration-500">
           <Shield className="w-12 h-12 text-primary" />
         </div>
-
+        
         <h2 className="text-4xl font-black text-center text-secondary mb-4 tracking-tighter">
           {isRegistering ? 'JOIN THE FORCE' : 'WELCOME BACK'}
         </h2>
         <p className="text-center text-slate-400 mb-12 text-sm font-bold uppercase tracking-[0.2em]">
-          {isRegistering
-            ? 'Become a rapid responder today.'
+          {isRegistering 
+            ? 'Become a rapid responder today.' 
             : 'Access your operational command.'}
         </p>
 
@@ -77,8 +77,8 @@ export default function VolunteerLogin({ onLogin }: VolunteerLoginProps) {
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-2">Full Name</label>
                 <div className="relative group">
                   <User className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-primary transition-colors" />
-                  <input
-                    type="text"
+                  <input 
+                    type="text" 
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Enter your full name"
@@ -90,8 +90,8 @@ export default function VolunteerLogin({ onLogin }: VolunteerLoginProps) {
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-2">Assigned Area</label>
                 <div className="relative group">
                   <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-primary transition-colors" />
-                  <input
-                    type="text"
+                  <input 
+                    type="text" 
                     value={formData.area}
                     onChange={(e) => setFormData({ ...formData, area: e.target.value })}
                     placeholder="e.g. Dhanmondi, Dhaka"
@@ -106,8 +106,8 @@ export default function VolunteerLogin({ onLogin }: VolunteerLoginProps) {
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-2">Phone Number</label>
             <div className="relative group">
               <Phone className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-primary transition-colors" />
-              <input
-                type="tel"
+              <input 
+                type="tel" 
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="017XXXXXXXX"
@@ -134,7 +134,7 @@ export default function VolunteerLogin({ onLogin }: VolunteerLoginProps) {
         </form>
 
         <div className="mt-12 pt-10 border-t border-slate-100 text-center">
-          <button
+          <button 
             onClick={() => setIsRegistering(!isRegistering)}
             className="text-[10px] font-black text-slate-400 hover:text-primary uppercase tracking-[0.3em] transition-colors"
           >

@@ -79,7 +79,7 @@ export default function ReportForm() {
         const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         const response = await ai.models.generateContent({
           model: "gemini-3-flash-preview",
-          contents: `Provide a list of 5 likely location suggestions (city, area, or landmark names) that start with or match: "${searchQuery}".
+          contents: `Provide a list of 5 likely location suggestions (city, area, or landmark names) that start with or match: "${searchQuery}". 
           Return ONLY a JSON array of strings.`,
           config: {
             responseMimeType: "application/json",
@@ -109,7 +109,7 @@ export default function ReportForm() {
   const handleSearchLocation = async (e?: React.FormEvent, queryOverride?: string) => {
     if (e) e.preventDefault();
     const query = queryOverride || searchQuery;
-
+    
     if (!query.trim()) {
       toast.error('Please enter a location to search');
       return;
@@ -121,8 +121,8 @@ export default function ReportForm() {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: `Find the precise latitude and longitude for the location: "${query}".
-        Return ONLY a JSON object with "lat" and "lng" keys.
+        contents: `Find the precise latitude and longitude for the location: "${query}". 
+        Return ONLY a JSON object with "lat" and "lng" keys. 
         If it's a general area, provide the center coordinates.`,
         config: {
           responseMimeType: "application/json",
@@ -139,7 +139,7 @@ export default function ReportForm() {
 
       const text = response.text;
       if (!text) throw new Error('No response from AI');
-
+      
       const result = JSON.parse(text);
       setLocation({ lat: result.lat, lng: result.lng });
       setSearchQuery(query);
@@ -213,7 +213,7 @@ export default function ReportForm() {
 
   if (isSuccess) {
     return (
-      <motion.div
+      <motion.div 
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         className="max-w-md mx-auto glass-card p-12 rounded-[48px] text-center"
@@ -225,7 +225,7 @@ export default function ReportForm() {
         <p className="text-slate-500 mb-12 leading-relaxed font-medium">
           Your alert has been broadcasted to all local responders. Stay safe and wait for contact.
         </p>
-        <button
+        <button 
           onClick={() => setIsSuccess(false)}
           className="btn-primary w-full shadow-2xl"
         >
@@ -238,7 +238,7 @@ export default function ReportForm() {
   return (
     <div className="max-w-4xl mx-auto py-16 px-4">
       <header className="text-center mb-20">
-        <motion.div
+        <motion.div 
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           className="inline-flex items-center gap-3 bg-primary/10 text-primary px-6 py-2.5 rounded-2xl text-xs font-black uppercase tracking-[0.2em] mb-8 border border-primary/20"
@@ -254,14 +254,14 @@ export default function ReportForm() {
         </p>
       </header>
 
-      <motion.form
+      <motion.form 
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         onSubmit={handleSubmit}
         className="glass-card p-12 rounded-[48px] space-y-12 relative overflow-hidden"
       >
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl" />
-
+        
         <section>
           <div className="flex items-center gap-4 mb-8">
             <div className="w-10 h-10 rounded-xl bg-secondary text-white flex items-center justify-center text-sm font-black shadow-lg">01</div>
@@ -274,8 +274,8 @@ export default function ReportForm() {
                 type="button"
                 onClick={() => setType(dt.id)}
                 className={`p-8 rounded-[32px] border-4 transition-all duration-500 text-center flex flex-col items-center gap-4 group relative overflow-hidden ${
-                  type === dt.id
-                    ? 'border-primary bg-primary/5 shadow-2xl shadow-primary/10 scale-105 z-10'
+                  type === dt.id 
+                    ? 'border-primary bg-primary/5 shadow-2xl shadow-primary/10 scale-105 z-10' 
                     : 'border-slate-50 bg-slate-50/50 hover:border-slate-200 hover:bg-white'
                 }`}
               >
@@ -284,7 +284,7 @@ export default function ReportForm() {
                   {dt.id}
                 </span>
                 {type === dt.id && (
-                  <motion.div
+                  <motion.div 
                     layoutId="active-bg"
                     className="absolute inset-0 bg-primary/5 -z-10"
                   />
@@ -308,8 +308,8 @@ export default function ReportForm() {
                     type="button"
                     onClick={() => setSeverity(s)}
                     className={`px-4 py-4 rounded-2xl border-2 text-[10px] font-black uppercase tracking-widest transition-all ${
-                      severity === s
-                        ? 'bg-secondary text-white border-secondary shadow-xl'
+                      severity === s 
+                        ? 'bg-secondary text-white border-secondary shadow-xl' 
                         : 'bg-white text-slate-400 border-slate-100 hover:border-slate-200'
                     }`}
                   >
@@ -324,8 +324,8 @@ export default function ReportForm() {
                 <div className="w-10 h-10 rounded-xl bg-secondary text-white flex items-center justify-center text-sm font-black shadow-lg">03</div>
                 <label className="text-xs font-black text-secondary uppercase tracking-[0.3em]">Area Name</label>
               </div>
-              <input
-                type="text"
+              <input 
+                type="text" 
                 value={area}
                 onChange={(e) => setArea(e.target.value)}
                 placeholder="e.g. Dhanmondi, Dhaka"
@@ -340,13 +340,13 @@ export default function ReportForm() {
                 <div className="w-10 h-10 rounded-xl bg-secondary text-white flex items-center justify-center text-sm font-black shadow-lg">04</div>
                 <label className="text-xs font-black text-secondary uppercase tracking-[0.3em]">GPS Location</label>
               </div>
-
+              
               <div className="space-y-4">
                 <div className="relative group" ref={suggestionRef}>
                   <div className="relative">
                     <Search className={`absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors ${isFetchingSuggestions ? 'text-primary animate-pulse' : 'text-slate-300 group-focus-within:text-primary'}`} />
-                    <input
-                      type="text"
+                    <input 
+                      type="text" 
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
@@ -366,7 +366,7 @@ export default function ReportForm() {
 
                   <AnimatePresence>
                     {showSuggestions && suggestions.length > 0 && (
-                      <motion.div
+                      <motion.div 
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
@@ -401,8 +401,8 @@ export default function ReportForm() {
                   type="button"
                   onClick={handleGetLocation}
                   className={`w-full flex items-center justify-center gap-4 px-8 py-5 rounded-2xl border-2 transition-all duration-500 font-black text-xs uppercase tracking-widest shadow-sm ${
-                    location
-                      ? 'border-emerald-500 bg-emerald-50 text-emerald-600'
+                    location 
+                      ? 'border-emerald-500 bg-emerald-50 text-emerald-600' 
                       : 'border-slate-200 bg-white hover:border-primary text-slate-500'
                   }`}
                 >
@@ -418,7 +418,7 @@ export default function ReportForm() {
                         {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
                       </span>
                     </div>
-                    <button
+                    <button 
                       type="button"
                       onClick={() => {
                         setLocation(null);
@@ -433,9 +433,9 @@ export default function ReportForm() {
                 )}
 
                 <div className="h-64 rounded-3xl overflow-hidden border-2 border-slate-100 shadow-inner relative z-0">
-                  <MapContainer
-                    center={location ? [location.lat, location.lng] : [23.8103, 90.4125]}
-                    zoom={location ? 13 : 7}
+                  <MapContainer 
+                    center={location ? [location.lat, location.lng] : [23.8103, 90.4125]} 
+                    zoom={location ? 13 : 7} 
                     style={{ height: '100%', width: '100%' }}
                     scrollWheelZoom={false}
                   >
@@ -468,7 +468,7 @@ export default function ReportForm() {
                 <div className="w-10 h-10 rounded-xl bg-secondary text-white flex items-center justify-center text-sm font-black shadow-lg">05</div>
                 <label className="text-xs font-black text-secondary uppercase tracking-[0.3em]">Situation Details</label>
               </div>
-              <textarea
+              <textarea 
                 rows={1}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
