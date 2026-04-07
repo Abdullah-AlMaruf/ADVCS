@@ -1,0 +1,61 @@
+{
+  "entities": {
+    "Report": {
+      "title": "Emergency Report",
+      "description": "A report of a disaster or emergency situation.",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "description": "Type of disaster (flood, fire, etc.)" },
+        "severity": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+        "lat": { "type": "number" },
+        "lng": { "type": "number" },
+        "area": { "type": "string" },
+        "description": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "active", "completed"], "default": "pending" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["type", "area", "description", "status", "createdAt"]
+    },
+    "Volunteer": {
+      "title": "Volunteer Profile",
+      "description": "Information about a registered volunteer.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "area": { "type": "string" },
+        "status": { "type": "string", "enum": ["idle", "busy"], "default": "idle" },
+        "lastLat": { "type": "number" },
+        "lastLng": { "type": "number" }
+      },
+      "required": ["uid", "name", "phone", "area", "status"]
+    },
+    "Action": {
+      "title": "Volunteer Action",
+      "description": "An action taken by a volunteer on a report.",
+      "type": "object",
+      "properties": {
+        "reportId": { "type": "string" },
+        "volunteerId": { "type": "string" },
+        "status": { "type": "string", "enum": ["accepted", "helping", "completed"] },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["reportId", "volunteerId", "status", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/reports/{reportId}": {
+      "schema": "Report",
+      "description": "Collection of emergency reports."
+    },
+    "/volunteers/{volunteerId}": {
+      "schema": "Volunteer",
+      "description": "Collection of volunteer profiles."
+    },
+    "/actions/{actionId}": {
+      "schema": "Action",
+      "description": "Collection of actions taken on reports."
+    }
+  }
+}

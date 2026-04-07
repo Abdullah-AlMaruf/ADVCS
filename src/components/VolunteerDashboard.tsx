@@ -22,9 +22,22 @@ import {
 import { DisasterReport, Volunteer } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
-import { io } from 'socket.io-client';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import { db, OperationType, handleFirestoreError } from '../firebase';
+import { 
+  collection, 
+  query, 
+  orderBy, 
+  onSnapshot, 
+  doc, 
+  updateDoc, 
+  deleteDoc, 
+  addDoc, 
+  serverTimestamp,
+  getDocs,
+  where
+} from 'firebase/firestore';
 
 // Fix for default marker icon in Leaflet
 import 'leaflet/dist/leaflet.css';
@@ -43,8 +56,6 @@ function MapUpdater({ center, zoom }: { center: [number, number], zoom: number }
   }, [center, zoom, map]);
   return null;
 }
-
-const socket = io();
 
 interface VolunteerDashboardProps {
   user: Volunteer;
@@ -251,69 +262,50 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
   const [filter, setFilter] = useState<'all' | 'pending' | 'active' | 'completed'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [editingReport, setEditingReport] = useState<DisasterReport | null>(null);
-  const [deletingReportId, setDeletingReportId] = useState<number | null>(null);
+  const [deletingReportId, setDeletingReportId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [mapCenter, setMapCenter] = useState<[number, number]>([23.8103, 90.4125]);
   const [mapZoom, setMapZoom] = useState(7);
   const [viewingMapReport, setViewingMapReport] = useState<DisasterReport | null>(null);
 
-  const fetchData = async () => {
-    try {
-      const [reportsRes, statsRes] = await Promise.all([
-        fetch('/api/reports'),
-        fetch('/api/stats')
-      ]);
-      const reportsData = await reportsRes.json();
-      const statsData = await statsRes.json();
-      setReports(reportsData);
-      setStats(statsData);
-    } catch (error) {
-      toast.error('Failed to fetch dashboard data');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchData();
+    const q = query(collection(db, 'reports'), orderBy('createdAt', 'desc'));
+    
+    const unsubscribeReports = onSnapshot(q, (snapshot) => {
+      const reportsData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as DisasterReport[];
+      setReports(reportsData);
+      setIsLoading(false);
 
-    // Handle viewMap query parameter
-    const params = new URLSearchParams(window.location.search);
-    const viewMapId = params.get('viewMap');
-    if (viewMapId) {
-      // We need to wait for reports to be loaded
-    }
-
-    socket.on('new_report', (report) => {
-      setReports(prev => [report, ...prev]);
-      setStats(prev => ({ ...prev, totalReports: prev.totalReports + 1 }));
+      // Update stats locally
+      const total = reportsData.length;
+      const completed = reportsData.filter(r => r.status === 'completed').length;
+      setStats(prev => ({ ...prev, totalReports: total, completedTasks: completed }));
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'reports');
     });
 
-    socket.on('report_updated', (updatedReport) => {
-      setReports(prev => prev.map(r => r.id === updatedReport.id ? updatedReport : r));
-    });
-
-    socket.on('report_deleted', (reportId) => {
-      setReports(prev => prev.filter(r => r.id !== reportId));
-    });
-
-    socket.on('stats_updated', (newStats) => {
-      setStats(newStats);
-    });
-
-    return () => {
-      socket.off('new_report');
-      socket.off('report_updated');
-      socket.off('report_deleted');
-      socket.off('stats_updated');
+    // Fetch volunteer count
+    const fetchVolunteerCount = async () => {
+      try {
+        const vSnapshot = await getDocs(query(collection(db, 'volunteers'), where('status', '==', 'idle')));
+        setStats(prev => ({ ...prev, activeVolunteers: vSnapshot.size }));
+      } catch (error) {
+        console.error('Error fetching volunteers:', error);
+      }
     };
+    fetchVolunteerCount();
+
+    return () => unsubscribeReports();
   }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const viewMapId = params.get('viewMap');
     if (viewMapId && reports.length > 0) {
-      const report = reports.find(r => r.id === parseInt(viewMapId));
+      const report = reports.find(r => r.id === viewMapId);
       if (report && report.lat && report.lng) {
         setViewingMapReport(report);
         // Clear the query parameter without refreshing
@@ -322,59 +314,52 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
     }
   }, [reports]);
 
-  const handleAction = async (reportId: number, status: string) => {
+  const handleAction = async (reportId: string, status: string) => {
     try {
-      const response = await fetch('/api/actions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          report_id: reportId,
-          volunteer_id: user.id,
-          status
-        }),
+      const reportRef = doc(db, 'reports', reportId);
+      await updateDoc(reportRef, { status: status === 'completed' ? 'completed' : 'active' });
+      
+      // Update volunteer status if needed
+      if (status === 'accepted' || status === 'helping') {
+        await updateDoc(doc(db, 'volunteers', user.uid), { status: 'busy' });
+      } else if (status === 'completed') {
+        await updateDoc(doc(db, 'volunteers', user.uid), { status: 'idle' });
+      }
+
+      // Log action
+      await addDoc(collection(db, 'actions'), {
+        reportId,
+        volunteerId: user.uid,
+        status,
+        updatedAt: serverTimestamp()
       });
 
-      if (response.ok) {
-        toast.success(`Task status updated to ${status}`);
-        fetchData();
-      }
+      toast.success(`Task status updated to ${status}`);
     } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, `reports/${reportId}`);
       toast.error('Failed to update task status');
     }
   };
 
-  const handleDelete = async (reportId: number) => {
+  const handleDelete = async (reportId: string) => {
     try {
-      const response = await fetch(`/api/reports/${reportId}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        toast.success('Report deleted successfully');
-        setReports(prev => prev.filter(r => r.id !== reportId));
-        setDeletingReportId(null);
-      } else {
-        const error = await response.json();
-        toast.error(error.error || 'Failed to delete report');
-      }
+      await deleteDoc(doc(db, 'reports', reportId));
+      toast.success('Report deleted successfully');
+      setDeletingReportId(null);
     } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, `reports/${reportId}`);
       toast.error('Failed to delete report');
     }
   };
 
-  const handleUpdate = async (reportId: number, updatedData: Partial<DisasterReport>) => {
+  const handleUpdate = async (reportId: string, updatedData: Partial<DisasterReport>) => {
     try {
-      const response = await fetch(`/api/reports/${reportId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedData),
-      });
-
-      if (response.ok) {
-        toast.success('Report updated successfully');
-        setEditingReport(null);
-      }
+      const reportRef = doc(db, 'reports', reportId);
+      await updateDoc(reportRef, updatedData);
+      toast.success('Report updated successfully');
+      setEditingReport(null);
     } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, `reports/${reportId}`);
       toast.error('Failed to update report');
     }
   };
@@ -457,7 +442,16 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
           <div className="flex items-center gap-6">
             <h2 className="text-4xl font-black text-secondary tracking-tighter">LIVE FEED</h2>
             <button 
-              onClick={fetchData}
+              onClick={() => {
+                const q = query(collection(db, 'reports'), orderBy('createdAt', 'desc'));
+                getDocs(q).then(snapshot => {
+                  const reportsData = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                  })) as DisasterReport[];
+                  setReports(reportsData);
+                });
+              }}
               className="p-3.5 bg-white hover:bg-primary hover:text-white rounded-2xl transition-all text-slate-400 shadow-xl shadow-slate-200/50 active:rotate-180 duration-700"
               title="Refresh Feed"
             >
@@ -666,7 +660,7 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
                               </span>
                               <span className="flex items-center gap-2">
                                 <Clock className="w-4 h-4 text-primary" />
-                                {formatDistanceToNow(new Date(report.created_at))} ago
+                                {report.createdAt ? formatDistanceToNow(report.createdAt.toDate()) : 'just now'} ago
                               </span>
                             </div>
                             <p className="text-slate-500 leading-relaxed max-w-3xl text-lg font-medium">{report.description}</p>

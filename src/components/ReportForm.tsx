@@ -7,6 +7,8 @@ import { AlertTriangle, MapPin, Send, CheckCircle2, Loader2, Search, Globe, Chev
 import { toast } from 'sonner';
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
+import { db, OperationType, handleFirestoreError } from '../firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 // Fix for default marker icon in Leaflet
 let DefaultIcon = L.icon({
@@ -165,26 +167,21 @@ export default function ReportForm() {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/reports', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type,
-          severity,
-          area,
-          description,
-          lat: location?.lat,
-          lng: location?.lng,
-        }),
+      await addDoc(collection(db, 'reports'), {
+        type,
+        severity,
+        area,
+        description,
+        lat: location?.lat || null,
+        lng: location?.lng || null,
+        status: 'pending',
+        createdAt: serverTimestamp(),
       });
 
-      if (response.ok) {
-        setIsSuccess(true);
-        toast.success('Report submitted successfully! Local volunteers have been notified.');
-      } else {
-        throw new Error('Failed to submit report');
-      }
+      setIsSuccess(true);
+      toast.success('Report submitted successfully! Local volunteers have been notified.');
     } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, 'reports');
       toast.error('Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);

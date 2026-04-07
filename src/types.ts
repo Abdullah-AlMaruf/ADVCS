@@ -1,7 +1,7 @@
 export type ReportStatus = 'pending' | 'active' | 'completed' | 'verified';
 
 export interface DisasterReport {
-  id: number;
+  id: string;
   type: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
   lat: number;
@@ -9,23 +9,24 @@ export interface DisasterReport {
   area: string;
   description: string;
   status: ReportStatus;
-  created_at: string;
+  createdAt: any; // Firestore Timestamp
 }
 
 export interface Volunteer {
-  id: number;
+  uid: string;
   name: string;
   phone: string;
   area: string;
   status: 'idle' | 'busy';
-  last_lat?: number;
-  last_lng?: number;
+  lastLat?: number;
+  lastLng?: number;
+  role?: 'admin' | 'user';
 }
 
 export interface Action {
-  id: number;
-  report_id: number;
-  volunteer_id: number;
+  id: string;
+  reportId: string;
+  volunteerId: string;
   status: string;
-  updated_at: string;
+  updatedAt: any; // Firestore Timestamp
 }
