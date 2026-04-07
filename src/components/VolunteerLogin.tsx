@@ -11,12 +11,9 @@ import {
   signInWithPopup,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
   OperationType,
   handleFirestoreError,
-  User,
-  ConfirmationResult
+  User
 } from '../firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
@@ -24,7 +21,7 @@ interface VolunteerLoginProps {
   onLogin: (volunteer: Volunteer) => void;
 }
 
-type AuthMethod = 'google' | 'email' | 'phone';
+type AuthMethod = 'google' | 'email';
 
 export default function VolunteerLogin({ onLogin }: VolunteerLoginProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -41,24 +38,8 @@ export default function VolunteerLogin({ onLogin }: VolunteerLoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // Phone Data
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [verificationCode, setVerificationCode] = useState('');
-  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
-  const [showOtpInput, setShowOtpInput] = useState(false);
-
-  const recaptchaVerifierRef = useRef<any>(null);
-
   useEffect(() => {
-    // Cleanup reCAPTCHA on unmount
-    return () => {
-      if (recaptchaVerifierRef.current) {
-        try {
-          recaptchaVerifierRef.current.clear();
-        } catch (e) {}
-        recaptchaVerifierRef.current = null;
-      }
-    };
+    // No cleanup needed currently
   }, []);
 
   const checkProfileAndLogin = async (user: User) => {
@@ -107,60 +88,6 @@ export default function VolunteerLogin({ onLogin }: VolunteerLoginProps) {
     } catch (error: any) {
       console.error('Email Auth error:', error);
       toast.error(error.message || 'Authentication failed');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handlePhoneSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!phoneNumber) {
-      toast.error('Please enter your phone number');
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      // Initialize reCAPTCHA if not already initialized
-      if (!recaptchaVerifierRef.current) {
-        recaptchaVerifierRef.current = new RecaptchaVerifier(auth, 'recaptcha-container', {
-          size: 'invisible',
-          callback: () => {
-            // reCAPTCHA solved
-          }
-        });
-      }
-
-      const appVerifier = recaptchaVerifierRef.current;
-      const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
-      setConfirmationResult(result);
-      setShowOtpInput(true);
-      toast.success('Verification code sent!');
-    } catch (error: any) {
-      console.error('Phone Sign In error:', error);
-      // If error is about recaptcha-container, it might have been unmounted
-      if (error.code === 'auth/argument-error' || error.message?.includes('recaptcha-container')) {
-        recaptchaVerifierRef.current = null;
-        toast.error('Security check failed. Please try again.');
-      } else {
-        toast.error(error.message || 'Failed to send verification code');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!verificationCode || !confirmationResult) return;
-
-    setIsLoading(true);
-    try {
-      const result = await confirmationResult.confirm(verificationCode);
-      await checkProfileAndLogin(result.user);
-    } catch (error: any) {
-      console.error('OTP Verification error:', error);
-      toast.error('Invalid verification code');
     } finally {
       setIsLoading(false);
     }
@@ -290,12 +217,6 @@ export default function VolunteerLogin({ onLogin }: VolunteerLoginProps) {
           >
             Email
           </button>
-          <button
-            onClick={() => setAuthMethod('phone')}
-            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${authMethod === 'phone' ? 'bg-white text-primary shadow-sm' : 'text-slate-400'}`}
-          >
-            Phone
-          </button>
         </div>
 
         <AnimatePresence mode="wait">
@@ -381,86 +302,6 @@ export default function VolunteerLogin({ onLogin }: VolunteerLoginProps) {
                   {isLoginMode ? "Don't have an account? Sign Up" : "Already have an account? Login"}
                 </button>
               </div>
-            </motion.div>
-          )}
-
-          {authMethod === 'phone' && (
-            <motion.div
-              key="phone"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="space-y-6"
-            >
-              {!showOtpInput ? (
-                <form onSubmit={handlePhoneSignIn} className="space-y-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Phone Number</label>
-                    <div className="relative group">
-                      <Phone className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-primary transition-colors" />
-                      <input
-                        type="tel"
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        placeholder="+88017XXXXXXXX"
-                        className="input-field pl-14"
-                      />
-                    </div>
-                  </div>
-                  <div id="recaptcha-container"></div>
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="btn-primary w-full !py-5 !text-lg flex items-center justify-center gap-4"
-                  >
-                    {isLoading ? (
-                      <Loader2 className="w-7 h-7 animate-spin" />
-                    ) : (
-                      <>
-                        SEND OTP
-                        <ArrowRight className="w-6 h-6" />
-                      </>
-                    )}
-                  </button>
-                </form>
-              ) : (
-                <form onSubmit={handleVerifyOtp} className="space-y-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Verification Code</label>
-                    <div className="relative group">
-                      <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-primary transition-colors" />
-                      <input
-                        type="text"
-                        value={verificationCode}
-                        onChange={(e) => setVerificationCode(e.target.value)}
-                        placeholder="Enter 6-digit code"
-                        className="input-field pl-14"
-                      />
-                    </div>
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="btn-primary w-full !py-5 !text-lg flex items-center justify-center gap-4"
-                  >
-                    {isLoading ? (
-                      <Loader2 className="w-7 h-7 animate-spin" />
-                    ) : (
-                      <>
-                        VERIFY & LOGIN
-                        <ArrowRight className="w-6 h-6" />
-                      </>
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowOtpInput(false)}
-                    className="w-full text-[10px] font-black text-slate-400 hover:text-primary uppercase tracking-widest transition-colors"
-                  >
-                    Change Phone Number
-                  </button>
-                </form>
-              )}
             </motion.div>
           )}
         </AnimatePresence>

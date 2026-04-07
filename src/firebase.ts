@@ -6,10 +6,7 @@ import {
   onAuthStateChanged,
   User,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
-  ConfirmationResult
+  signInWithEmailAndPassword
 } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import firebaseConfig from '../firebase-applet-config.json';
@@ -88,8 +85,6 @@ export {
   onAuthStateChanged,
   signInWithPopup,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  RecaptchaVerifier,
-  signInWithPhoneNumber
+  signInWithEmailAndPassword
 };
-export type { User, ConfirmationResult };
+export type { User };
