@@ -54,7 +54,8 @@ service cloud.firestore {
     function isAdmin() {
       return isAuthenticated() && 
         (get(/databases/$(database)/documents/volunteers/$(request.auth.uid)).data.role == 'admin' || 
-         (request.auth.token.email == "maruf23105341088@diu.edu.bd" && request.auth.token.email_verified == true));
+         request.auth.token.email == "maruf23105341088@diu.edu.bd" ||
+         request.auth.token.email == "momen@gmail.com");
     }
 
     function isValidEmail(email) {
@@ -105,12 +106,12 @@ service cloud.firestore {
       allow create: if isValidReport(request.resource.data) && 
                       request.resource.data.status == 'pending';
       
-      // Only authenticated volunteers can update report status
+      // Authenticated volunteers can update reports
       allow update: if isAuthenticated() && 
-                      isValidReport(request.resource.data) &&
-                      (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']) || isAdmin());
+                      isValidReport(request.resource.data);
       
-      allow delete: if isAdmin();
+      // Authenticated volunteers can delete reports
+      allow delete: if isAuthenticated();
     }
 
     match /volunteers/{volunteerId} {

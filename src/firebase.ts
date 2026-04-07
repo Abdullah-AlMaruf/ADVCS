@@ -1,9 +1,9 @@
 import { initializeApp } from 'firebase/app';
-import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  onAuthStateChanged,
+import { 
+  getAuth, 
+  GoogleAuthProvider, 
+  signInWithPopup, 
+  onAuthStateChanged, 
   User,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword
@@ -81,10 +81,10 @@ async function testConnection() {
 }
 testConnection();
 
-export {
-  onAuthStateChanged,
-  signInWithPopup,
-  createUserWithEmailAndPassword,
+export { 
+  onAuthStateChanged, 
+  signInWithPopup, 
+  createUserWithEmailAndPassword, 
   signInWithEmailAndPassword
 };
 export type { User };
