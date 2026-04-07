@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
+// VERSION: 2.0 - NOMINATIM REPLACEMENT
 import React from 'react';
+console.log('ReportForm.tsx loaded - Version 2.0 (Nominatim)');
 import { motion, AnimatePresence } from 'motion/react';
 import { AlertTriangle, MapPin, Send, CheckCircle2, Loader2, Search, Globe, ChevronRight, Navigation } from 'lucide-react';
 import { toast } from 'sonner';
-import { GoogleGenAI, Type } from "@google/genai";
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 
@@ -76,23 +77,13 @@ export default function ReportForm() {
 
       setIsFetchingSuggestions(true);
       try {
-        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-        const response = await ai.models.generateContent({
-          model: "gemini-3-flash-preview",
-          contents: `Provide a list of 5 likely location suggestions (city, area, or landmark names) that start with or match: "${searchQuery}". 
-          Return ONLY a JSON array of strings.`,
-          config: {
-            responseMimeType: "application/json",
-            responseSchema: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING }
-            }
-          }
-        });
-
-        const text = response.text;
-        if (text) {
-          setSuggestions(JSON.parse(text));
+        // Using Nominatim (OpenStreetMap) for location suggestions
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5&addressdetails=1`);
+        const data = await response.json();
+        
+        if (Array.isArray(data)) {
+          const formattedSuggestions = data.map((item: any) => item.display_name);
+          setSuggestions(formattedSuggestions);
           setShowSuggestions(true);
         }
       } catch (error) {
@@ -118,36 +109,25 @@ export default function ReportForm() {
     setIsSearching(true);
     setShowSuggestions(false);
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: `Find the precise latitude and longitude for the location: "${query}". 
-        Return ONLY a JSON object with "lat" and "lng" keys. 
-        If it's a general area, provide the center coordinates.`,
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              lat: { type: Type.NUMBER, description: "Latitude coordinate" },
-              lng: { type: Type.NUMBER, description: "Longitude coordinate" }
-            },
-            required: ["lat", "lng"]
-          }
-        }
-      });
-
-      const text = response.text;
-      if (!text) throw new Error('No response from AI');
+      // Using Nominatim (OpenStreetMap) for geocoding
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
+      const data = await response.json();
       
-      const result = JSON.parse(text);
-      setLocation({ lat: result.lat, lng: result.lng });
-      setSearchQuery(query);
-      // Auto-populate Area Name if it's empty
-      if (!area) {
-        setArea(query);
+      if (Array.isArray(data) && data.length > 0) {
+        const result = data[0];
+        const lat = parseFloat(result.lat);
+        const lng = parseFloat(result.lon);
+        
+        setLocation({ lat, lng });
+        setSearchQuery(query);
+        // Auto-populate Area Name if it's empty
+        if (!area) {
+          setArea(query);
+        }
+        toast.success(`Location identified: ${lat.toFixed(4)}, ${lng.toFixed(4)}`);
+      } else {
+        toast.error('Location not found. Please try a different search term.');
       }
-      toast.success(`Location identified: ${result.lat.toFixed(4)}, ${result.lng.toFixed(4)}`);
     } catch (error) {
       console.error('Search error:', error);
       toast.error('Could not pinpoint that location. Please try a more specific address.');
