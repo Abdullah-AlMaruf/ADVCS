@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Shield, Loader2, MapPin, LogIn, Mail, Phone, Lock, User as UserIcon, ArrowRight } from 'lucide-react';
@@ -47,17 +47,19 @@ export default function VolunteerLogin({ onLogin }: VolunteerLoginProps) {
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   const [showOtpInput, setShowOtpInput] = useState(false);
 
+  const recaptchaVerifierRef = useRef<any>(null);
+
   useEffect(() => {
-    // Initialize reCAPTCHA for phone auth
-    if (authMethod === 'phone' && !window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible',
-        callback: () => {
-          // reCAPTCHA solved, allow signInWithPhoneNumber.
-        }
-      });
-    }
-  }, [authMethod]);
+    // Cleanup reCAPTCHA on unmount
+    return () => {
+      if (recaptchaVerifierRef.current) {
+        try {
+          recaptchaVerifierRef.current.clear();
+        } catch (e) {}
+        recaptchaVerifierRef.current = null;
+      }
+    };
+  }, []);
 
   const checkProfileAndLogin = async (user: User) => {
     const volunteerDoc = await getDoc(doc(db, 'volunteers', user.uid));
@@ -119,14 +121,30 @@ export default function VolunteerLogin({ onLogin }: VolunteerLoginProps) {
 
     setIsLoading(true);
     try {
-      const appVerifier = window.recaptchaVerifier;
+      // Initialize reCAPTCHA if not already initialized
+      if (!recaptchaVerifierRef.current) {
+        recaptchaVerifierRef.current = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          size: 'invisible',
+          callback: () => {
+            // reCAPTCHA solved
+          }
+        });
+      }
+
+      const appVerifier = recaptchaVerifierRef.current;
       const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
       setConfirmationResult(result);
       setShowOtpInput(true);
       toast.success('Verification code sent!');
     } catch (error: any) {
       console.error('Phone Sign In error:', error);
-      toast.error(error.message || 'Failed to send verification code');
+      // If error is about recaptcha-container, it might have been unmounted
+      if (error.code === 'auth/argument-error' || error.message?.includes('recaptcha-container')) {
+        recaptchaVerifierRef.current = null;
+        toast.error('Security check failed. Please try again.');
+      } else {
+        toast.error(error.message || 'Failed to send verification code');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -451,8 +469,3 @@ export default function VolunteerLogin({ onLogin }: VolunteerLoginProps) {
   );
 }
 
-declare global {
-  interface Window {
-    recaptchaVerifier: any;
-  }
-}
