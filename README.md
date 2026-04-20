@@ -6,7 +6,7 @@
 
 This contains everything you need to run your app locally.
 
-View your app in AI Studio: https://ai.studio/apps/663be7c3-fffd-4103-a567-475d09883834
+View your app in AI Studio: https://Sohayok/apps/663be7c3-fffd-4103-a567-475d09883834
 
 ## Run Locally
 
